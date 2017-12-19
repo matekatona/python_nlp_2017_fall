@@ -201,9 +201,6 @@
     * distribution
     * why organize code into functions/classes?
     * layers of abstraction
-    
-
-
 
 ## 14. `numpy/scipy`
 * main object (`ndarray`)
@@ -241,26 +238,119 @@
 # II. NLP topics
 
 ## 1. Tagging
-* POS-tags: definition, examples from Universal Tagset (not all tags, but DET, NOUN, ADJ, VERB)
+* POS-tags: (__P__art-__O__f-__S__peech)
+    * definition
+    * Universal Tagset 
+        * DET - determiner: a, the
+        * NOUN - noun: dog, cat
+        * ADJ - adjective: red, blue
+        * VERB - verb: see, write
+        * PRON - pronoun: me, us, 
 * Tagging in general: definitions and terminology (from lecture notebook)
+    * tokens: words for now
+    * corpus: list of tokens, "sample text"
+    * tokenization: splitting raw text into tokens
+    * tagset: finite set of tag symbols, linguists
+    * labeled corpus: (token, tag) pairs
+    * tagging: assign tags to an unlabeled corpus
+* statistical - no rules only previously correctly labeled data:
+    * training: setting up the algorithm based on pyld
+    * train set: correctly labeled data
+    * prediction: tagging new text with the algorithm (inference)
+    * test/unseen data: data with correct labels, but labels are not shown to the algorithm
+    * evaluation: compare predicted tags with correct tags
+    * annotating: manually labeling data by humans -> gold
+    * gold data: seriously labeled data
+    * silver data: lesser quality labeled data (might be automatic)
+    * test on train: evaluate algorithm on train set
 * NP-chunking: definition, examples
+    * find __N__oun __P__hrases in sentences
+    * single agent
+    * NP is someone/something that
+        * does something
+        * the action is performed on
+        * involved
+    * shallow parsing: not the whole, just some parts
 * NER: definition, examples
-* Naive ways limitations (non-unique POS-tag, capital letters in NER)
+    * __N__amed __E__ntity __R__ecognition
+    * names of things
+    * persons, places, companies
+* Naive ways
+    * non-unique POS-tag:
+        * depends on context, surroundings
+        * many words with several tags: work, talk, walk
+    * capital letters in NER
+        * the United States, von Etwas
+        * sentences start with capitals: Biking in the rain is fun.
+    * no complete list exists
 * Supervised learning, labeled data in general
+    * train on data+label pairs, then predict and evaluate
+    * object recognition in images, every other thing
+    * problems with correctly labeled data:
+        * quality <-> quantity
+        * errors
 * Sequential data: windows approach, problem with long-distance relationships
+    * order of words is very important!
+    * unordered window around WOI -> supervised learning
+    * width is usually not enough because LONG-DISTANCE RELATIONSHIPS
 * Simple POS-tagger: most seen pos tag in a given context of words
+    * all words in V vocabulary
+    * all tags in L labels
+    * POS tag determined by preceding/following words (and their tags)
+    * OOV -> not in train, 
+    * data sparsity -> word not seen with these words
 
 ## 2. An HMM POS-tagger
+
 * what is POS-tagging
+    * above
+* __H__idden __M__arkov __M__odel
+    * the POS tag is a hidden parameter of the words
+    * search for the tag sequence, that generates the words with the highest probability
+    * restricitons:
+        - window
+    * assumption:
+        - P(tag+word sequence) = P(current tag given the previous tags) * P(word given the tag)
+    * estimation (TRAINING):
+        - P(l) = #tagseq / #prevtagseq
+        - P(w) = #wordtag / #tag
+    * prediciton e.g. with viterbi
 * The Viterbi algorithm (k=2,3)
+    - k s the window
+    - step funciton:
+        + find the most probable ending tags
+        + find the next tag using the previous most probable sequence
+        + pi(k,prevtag,tag) = max on prevprevtag pi(k-1,prevprevtag,prevtag)*P(tagseq ppt,pt,t)\*P(wordtag)
+        + start with only wordtag prob, then build up
+        + then prev viterbi times wordtag times tagseq
+        + the most probable last k-1 tags are always known, with probability
+        + store the current most probable prevprevtag (from third iteration in k=3)
+        + the last iteration will yiels the most probable last k-1 tags
+        + the rest can be backtracked
 * Backtracking
+    - argmax
 
 ## 3. Evaluation
-* labeled corpus
-* train/test set, seen/unseen data
-* word accuracy, sentence accuracy
-* Binary classification metrics (TP/TN/FP/FN table, precision/recall, Fscore)
 
+* labeled corpus
+    - gold, silver, hoomans, etc
+* train/test set, seen/unseen data
+    - blabla
+* word accuracy: #correctlabels / #words
+* sentence accuracy: #sentencesswithalllabelscorrect / #sentences
+* OOV: #OOVwithcorrectlabels / #OOVs
+* Binary classification metrics (TP/TN/FP/FN table, precision/recall, Fscore)
+    - True/False Positive/Negative
+    - precision: TP/(TP+FP)
+        + correct predictions from all predicitons
+        + number of good predictions from all predictions
+    - accuracy: (TP+TN)/all
+        + correct moves from everything
+    - recall: TP/(TP+FN)
+        + correct predictions from all where should predict
+        + number of good predictions from all events, where it should predict
+    - Fscore: harmonic mean of prec and recall
+        + 2* (prec*rec)/(prec+rec)
 
 ## 4. Morphology: theory
 
