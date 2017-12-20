@@ -355,51 +355,228 @@
 ## 4. Morphology: theory
 
 - Basic concepts: morphemes, tags, analysis and generation
+    + morpheme: minimal meaning-bearing unit
+    + tags: like in POS, but for morphemes
+    + analysis: determine morphemes and their tags
+    + generation: reproduce surface form from morpheme tags
 - Why do we need morphology: tasks
+    + spell checking
+    + lemmatization: finding word stem
+    + information retreival (what, where, how, with what)
+    + first building block for syntax and semantics
 - Phenomena:
-    - free and bound morphems, affix placement, affix types
+    - free and bound morphems:
+        + free is root/stem/lemma: fox
+        + bound e.g. affxes: small__est__
+    - affix types:
+        + derivational: change POS (sad-ness, modern-ize) 
+        + inflectional: syntactic function (talk-ed, dog-s)
+    - affix placement:
+        + pre
+        + suf
+        + circum
+        + in
     - compounding, clitics
-    - non-concatenative morphology: reduplication, templates, ablaut
+        + more than one stem: seahorse
+        + don't, we'll
+    - non-concatenative morphology: 
+        + STEM MODIFICATION
+        + reduplication: iddy-biddy
+        + templates: for, far, fur
+        + ablaut: foot, feet
     - language types
+        - isolating: everything is separate - mandarin
+        - analytic: some inflection, but word order - english
+        - synthetic: much inflection, high morpheme-per-word
+            + fusional: single suffix encode many gramatical stuff
+            + agglunative: concatenative, slots
+            + polysynthetic: sentence-words
 - Computational morphology:
-    - components: lexicon, morphotactics, orthography
+    + RULES
+    - components: 
+        - lexicon: list of morphemes with basic info like POS
+        - morphotactics: ordering and interactions (basic)
+        - orthography/phonetics: mapping from morphemes to sounds
+    - usually with finite state transducers
+    - deep learning not very applicable
     - analysis, generation
+        + with FST both directions are posibble, but ambigous
 
 ## 5. Finite state morphology
 
 - Finite state:
-    - FSA, FST, mathematical description
-    - Operations on FSTs: inversion, composition, projection
+    - FSA - input, states, state changes 
+    - FST - all of the above, plus output
+    - mathematical description (5-tuple)
+        - Q: the set of states
+        - Sigma: the input alphabet
+        - q0: the initial state
+        - F: the accepting states
+        - Gamma (FST): output alphabet
+        - delta(q, w): the state transition function - Q x Sigma (x Gamma (FST)) x Q
+        - ---------------------------
+        - accepted symbol sequences: L language (L' output language), regular languages
+        - memoryless, efficient, fast
+    - Operations on FSTs: 
+        - inversion: swap upper and lower tapes (not IO)
+        - composition: FSTs are functions, funcitons composition
+            - Morphology = Ortography(MorphoTactics(Lexicon(x)))
+        - projection: one of the languages (are preserved)
 - Morphology:
-    - FSTs as morphological analyzers; analysis / generation, backtracking
+    - FSTs as morphological analyzers
+        + lex, MT, Orto as FSTs
+        + cascade or composition
+        + lower side (in): surface form
+        + upper side (out): morpheme struct (char + tag)
+    - analysis / generation
+        + inversion allows both
+        + apply up (low->upp): analysis
+        + apply down (upp->low): generation
+        + ambiguity everywhere
+    - backtracking
+        + backtrack possible candidates from the accepting state(s)
+        + list all possible candidates
     - lexc
+        + XFST, foma, formalisms
+        + MT, Orto as RE -> RULES
+        + lexc is designed sor lexicons, but rules also
+        + LEXICON
+            + entrys are morphemes
+                + characters, both sides
+                + transductions-> upper:lower
+            + and continuation classes -> other LEXICONs
+            
 - Related tasks:
-    - spell checking, lemmatization, tokenization
+    - spell checking:
+        + lower projection: all words in language
+    - lemmatization:
+        + morphological anlysis gets stem, delete tags
+    - tokenization:
+        + circular analyzer??? lower projection???
     - how a morphological FST can be used for these tasks
 
 ## 6. Syntax: theory
 
 - Basics: definition, grammaticality
-- Concepts: POS (open&closed), grammatical relations (predicate, arguments, adjuncts), subcategorization (valency, transitivity) , constituency (tests)
-- Phrase-structure grammars:
-    - Components: production rules, terminals, nonterminals
-    - Derivation, the parse tree, Chomsky Normal Form
+    + morphology: rules that govern the structure of words
+    + syntax: rules that govern the structure of __sentences__
+    + grammatical, if obeys the rules (meaning not relevant)
+- Concepts: 
+    - POS: categories with similar grammatical stuff
+        + open: CNN, lájkolni
+        + closed: determiners, prepositions
+    - grammatical relations (predicate, arguments, adjuncts)
+        + predicate: center of sentence, main verb
+        + arguments: of the predicate - subject, object (dir, indir)
+        + adjuncts: optional info, not related to the predicate (where, how, etc.)
+    - subcategorization (valency, transitivity)
+        + limits on arguments
+        + transitivity is only one
+            * intrans: no obj
+            * trans: direct subj
+            * ditrans: dir and indir subj
+    - constituency (tests)
+        + phrase
+        + group of words as unit, one grammatical role
+            + NounPhrase: the tall man
+            + PrepositionalPhrase: on the house's roof
+            + AdjectivalPhrase: pretty fucking awesome
+        - SUBSTITUTION
+        - TOPICALIZATION: move to front
+- Phrase-structure grammars (__C__ontext __F__ree __G__rammars):
+    - Components: 
+        + production rules
+            * phrase -> other phrases
+        + terminals
+            * part of language: dog
+        + nonterminals
+            * pos tag or phrase: Noun, NounPhrase
+    - Derivation
+        + start with __S__tart symbol, then apply rules, until all terminals
+        + the parse tree
+            * root is the start symbol
+            * nodes are nonterminals
+            * edges are rules
+            * leaves are terminals
+        + Chomsky Normal Form
+            * only two types of rules:
+                - Nonterminal -> Nonterminal Nonterminal
+                - Nonterminal -> temrinal
+            * binary trees
+            * for algorithms
 - Chomsky Normal Form and its algorithm
+    * rhs too long -> introduce new nonterminal
+    * unit productions -> delete, pull up
 - Dependency Grammar:
     - Difference from PSG
+        + PSG 
+            + no subjectobject
+            + no relationships
+            + english centric
+        + DG 
+            + direct relationship encoding
+            + semantic view
+            + free word order
     - The dependency tree
+        + nodes are words
+        + edges are grammatical relations
+        + root is virtual, outside of sentence
 
 ## 7. Parsing and PCFG
 
 - Parsing
+    + tree from sentence
     - Top-down and bottom-up parsing
-    - Challenges: nondeterminism and ambiguity (global/local); examples
-    - Dynamic programming; the CKY algorithm
+        + TD: start from S, rules until terminals (as generating), until whole sent
+        + BU: backward rules, connect subgraphs with rules, until single S tree
+    - Challenges: 
+        + nondeterminism:
+            + several rule expansions, only one is right: Verb -> ad | kap
+        + ambiguity:
+            + more than one correct parses
+            + global: whole sentence
+            + local: standalone constituent is, but not in the sentence
+            + e.g.:
+                * i saw him with glasses
+                * i saw big apples and pears
+                * work (Noun, Verb)
+    - Dynamic programming:
+        * smaller subproblems
+        * solve only once, store value
+    - CKY algorithm
+        + only works on CNF
+        * parse trees in matrix
+        * subtrees reused
+
 - PCFG
     - Motivation and mathematical formulation
+        + multiple parses, decide which one is best
+        + product of rule probs
     - Training and testing: treebanks and PARSEVAL
-    - Problems and solutions: subcategorization and lexicalization,
-                              independence and annotation
+        + treebank is golden parse trees
+        + normalized corpus freq
+            * rule occurences / lhs occurences
+        + PARSEVAL
+            * word span
+            * labeled, unlabeled
+            * precision: correct constituents / parsed constituents
+            * recall: correct constituents / actual contituents
+            * F: 2(prec*rec)/(prec+rec)
+    - Problems and solutions: 
+        + subcategorization: NOT SUPPORTED
+            * doesn't care about meaning, just number of occurences
+            + lexicalization
+                * annotate constituents -> more rules
+                * NounPhrase after eat is ok (object)
+                * NounPhrase after sleep is nok (no object)
+                * introduces sparsity -> lot of unprobable rules
+        + independence
+            * wrong assumption of rule applicability
+            * context sensitive!
+            + annotation:
+                * annotate constituents with grammatical features (singular, posessive)
+                * propagate up
+                * accept only if these match too
 
 ## 8. Classical machine translation
 
